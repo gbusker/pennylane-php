@@ -6,24 +6,29 @@ use GuzzleHttp\Client as GuzzleClient;
 
 class Client
 {
-    private string $baseUrl = 'https://app.pennylane.com/api/external/v2';
+    private string $baseUrl = 'https://app.pennylane.com/api/external/v2/';
     private GuzzleClient $httpClient;
 
+    private string $api_key;
+
     public function __construct()
-    {
+    {    
+        if ( !$this->api_key = getenv('PENNYLANE_API_KEY') ) {
+            throw new \InvalidArgumentException('API key is not set');
+        }
         $this->httpClient = new GuzzleClient([
             'base_uri' => $this->baseUrl,
             'http_errors' => false,
             'headers' => [ 
-                'Authorization' => 'Bearer ' . getenv('PENNYLANE_API_KEY'),
+                'Authorization' => 'Bearer ' . $this->api_key,
                 'Content-Type' => 'application/json',
             ],
+            'debug' => false
         ]);
     } 
 
     public function get(string $endpoint)
     {
-        
         $response = $this->httpClient->get($endpoint);
         if ($response->getStatusCode() >= 400) {
             throw new ClientException("API request failed with status code " . $response->getStatusCode(), $response);

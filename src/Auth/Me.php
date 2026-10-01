@@ -10,6 +10,6 @@ class Me
     public static function get()
     {
         $client = new Client();
-        return $client->get('/me');
+        return $client->get('me');
     }
 }
